@@ -16,4 +16,11 @@ public class CreateAccountInput {
         return currencies;
     }
 
+    public void setAccount(Account account) {
+        this.account = account;
+    }
+
+    public void setCurrencies(List<String> currencies) {
+        this.currencies = currencies;
+    }
 }

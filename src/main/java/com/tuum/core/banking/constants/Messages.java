@@ -18,5 +18,6 @@ public class Messages {
     public static final String  INVALID_AMOUNT_LESS ="Invalid Amount! Must be less than 9999999999999.99";
     public static final String  DESCRIPTION_TOO_LONG ="Description is too long. Must be less than 256 characters";
 
+    public static final String  COUNTRY_TOO_LONG ="Country is too long. Must be less than 256 characters";
 
 }

@@ -35,7 +35,7 @@ public class TransactionController {
             //checking account
             if(!accountService.isExist(accountId)){
                 return new ResponseEntity<>(new ApiResponse(null,Arrays.asList(INVALID_ACCOUNT)),
-                        HttpStatus.NOT_FOUND);
+                        HttpStatus.NO_CONTENT);
             }
             // getting transactions for given account
             List<Transaction> transactions = transactionService.getTransactionsByAccountId(accountId);

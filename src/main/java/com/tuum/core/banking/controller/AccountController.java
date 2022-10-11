@@ -60,7 +60,7 @@ public class AccountController {
 
             if(!account.isPresent()){
                 return new ResponseEntity<>(new ApiResponse(null,Arrays.asList(ACCOUNT_NOT_FOUND)),
-                        HttpStatus.NOT_FOUND);
+                        HttpStatus.NO_CONTENT);
             }
 
             // getting balances for given account

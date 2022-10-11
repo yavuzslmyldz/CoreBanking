@@ -3,6 +3,10 @@ package com.tuum.core.banking.entity;
 import com.sun.istack.NotNull;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
+
+import static com.tuum.core.banking.constants.Messages.*;
 
 @Entity
 @Table(name = "account")
@@ -19,6 +23,7 @@ public class Account extends CoreBankingBaseEntity {
     private int customerId;
 
     @Column(name="country")
+    @Size(max = 255, message = COUNTRY_TOO_LONG)
     private String country;
 
     public Account(int _customerId, String _country) {

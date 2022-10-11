@@ -2,9 +2,11 @@ package com.tuum.core.banking.service;
 
 import com.tuum.core.banking.constants.Currency;
 import com.tuum.core.banking.entity.Account;
+import com.tuum.core.banking.entity.Transaction;
 import com.tuum.core.banking.repository.AccountRepository;
 import com.tuum.core.banking.serviceparam.CreateAccountInput;
 import com.tuum.core.banking.utils.EnumUtils;
+import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,16 +14,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import java.util.*;
 
 import static com.tuum.core.banking.constants.Messages.INVALID_CURRENCY;
 
 @Service
 public class AccountService {
 
+    private Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
     private AccountRepository accountReporsitory;
 
     private BalanceService balanceService;
@@ -46,15 +49,22 @@ public class AccountService {
         List<String> violationMessages = new ArrayList<>();
         List<String> currencies = input.getCurrencies();
 
-        if(currencies == null || currencies.isEmpty()){
-            violationMessages.add(INVALID_CURRENCY);
-            return violationMessages;
+        Set<ConstraintViolation<Account>> violations = validator.validate(input.getAccount());
+        Iterator<ConstraintViolation<Account>> violationsItr = violations.iterator();
+
+        while(violationsItr.hasNext()) {
+            ConstraintViolation<Account> violation = violationsItr.next();
+            violationMessages.add(violation.getMessage());
         }
 
-        Iterator<String> itr = input.getCurrencies().iterator();
+        if(currencies == null || currencies.isEmpty()){
+            violationMessages.add(INVALID_CURRENCY);
+        }
 
-        while (itr.hasNext()) {
-            String currency = itr.next();
+        Iterator<String> currenciesItr = input.getCurrencies().iterator();
+
+        while (currenciesItr.hasNext()) {
+            String currency = currenciesItr.next();
             if(!EnumUtils.isMember(currency, Currency.class)){
                 violationMessages.add(INVALID_CURRENCY + ": " + currency);
             }
@@ -62,7 +72,7 @@ public class AccountService {
 
         return violationMessages;
     }
-    public void createAccountMessage(CreateAccountInput input){
+    public void createAccountMessage(CreateAccountInput input) throws AmqpException {
             mqTemplate.convertAndSend(exchange, accountRoutingKey, input);
     }
 
