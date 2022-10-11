@@ -4,6 +4,7 @@ import com.tuum.core.banking.constants.Currency;
 import com.tuum.core.banking.entity.Account;
 import com.tuum.core.banking.repository.AccountRepository;
 import com.tuum.core.banking.serviceparam.CreateAccountInput;
+import com.tuum.core.banking.utils.EnumUtils;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +55,7 @@ public class AccountService {
 
         while (itr.hasNext()) {
             String currency = itr.next();
-            if(!Currency.isMember(currency)){
+            if(!EnumUtils.isMember(currency, Currency.class)){
                 violationMessages.add(INVALID_CURRENCY + ": " + currency);
             }
         }

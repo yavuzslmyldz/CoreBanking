@@ -58,7 +58,7 @@ public class AccountController {
             //getting account
             Optional<Account> account = accountService.getAccount(accountId);
 
-            if(!account.isEmpty()){
+            if(!account.isPresent()){
                 return new ResponseEntity<>(new ApiResponse(null,Arrays.asList(ACCOUNT_NOT_FOUND)),
                         HttpStatus.NOT_FOUND);
             }

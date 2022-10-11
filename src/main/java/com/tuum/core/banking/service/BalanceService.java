@@ -54,7 +54,7 @@ public class BalanceService {
     }
 
     public Optional<Balance> getByAccountAndCurrency(long accountId, String currency){
-        List<Balance> balances = balanceRepository.findByAccountId(accountId);
-        return balances.stream().filter(x -> x.getCurrency().equals(currency)).findAny();
+       return balanceRepository.findByAccountId(accountId).stream()
+                .filter(x -> x.getCurrency().equals(currency)).findFirst();
     }
 }

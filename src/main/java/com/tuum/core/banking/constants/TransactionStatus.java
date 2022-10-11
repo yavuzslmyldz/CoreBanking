@@ -4,7 +4,6 @@ public enum TransactionStatus {
     WAITING,
     COMPLETED,
     REJECTED,
-
     INTERRUPTED
 
 }

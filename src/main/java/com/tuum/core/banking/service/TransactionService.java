@@ -7,6 +7,7 @@ import com.tuum.core.banking.entity.Account;
 import com.tuum.core.banking.entity.Balance;
 import com.tuum.core.banking.entity.Transaction;
 import com.tuum.core.banking.repository.TransactionRepository;
+import com.tuum.core.banking.utils.EnumUtils;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,13 +66,13 @@ public class TransactionService {
         }
 
         // checking direction
-            if(!Direction.isMember(transaction.getDirection())){
+            if(!EnumUtils.isMember(transaction.getDirection(), Direction.class)){
                 violationMessages.add(INVALID_DIRECTION);
                 return violationMessages;
             }
 
         // checking currency
-            if(!Currency.isMember(transaction.getCurrency())){
+            if(!EnumUtils.isMember(transaction.getCurrency(), Currency.class)){
                 violationMessages.add(INVALID_CURRENCY);
                 return violationMessages;
             }
@@ -86,7 +87,7 @@ public class TransactionService {
         Optional<Balance> balanceContainer = balanceService.getByAccountAndCurrency(transaction.getAccountId(),
                 transaction.getCurrency());
 
-        if(!balanceContainer.isEmpty()){
+        if(!balanceContainer.isPresent()){
             violationMessages.add(BALANCE_MISSING);
             return violationMessages;
         }
