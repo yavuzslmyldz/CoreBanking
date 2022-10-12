@@ -5,6 +5,7 @@ import com.tuum.core.banking.entity.Account;
 import com.tuum.core.banking.entity.Transaction;
 import com.tuum.core.banking.repository.AccountRepository;
 import com.tuum.core.banking.serviceparam.CreateAccountInput;
+import com.tuum.core.banking.serviceparam.CreateAccountOutput;
 import com.tuum.core.banking.utils.EnumUtils;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -72,15 +73,26 @@ public class AccountService {
 
         return violationMessages;
     }
-    public void createAccountMessage(CreateAccountInput input) throws AmqpException {
-            mqTemplate.convertAndSend(exchange, accountRoutingKey, input);
+    public CreateAccountOutput createAccountMessage(CreateAccountInput payload) throws AmqpException {
+            CreateAccountOutput message = new CreateAccountOutput();
+
+            // getting next id for service output
+            payload.getAccount().setId(accountReporsitory.getNextAccountId());
+
+            message.setBalances(balanceService.createBalancesViaAccount(payload.getAccount(),payload.getCurrencies()));
+            message.setAccount(payload.getAccount());
+
+            mqTemplate.convertAndSend(exchange, accountRoutingKey, message);
+
+
+            return message;
     }
 
     @Transactional
     @RabbitListener(queues = {"${core.banking.rabbitmq.account.queue}"})
-    public void accountConsumer(CreateAccountInput input){
-        accountReporsitory.save(input.getAccount());
-        balanceService.createBalancesViaAccount(input.getAccount(), input.getCurrencies());
+    public void accountConsumer(CreateAccountOutput unAcked){
+        accountReporsitory.save(unAcked.getAccount());
+        balanceService.saveBalances(unAcked.getBalances());
     }
 
     public Optional<Account> getAccount(long accountId){

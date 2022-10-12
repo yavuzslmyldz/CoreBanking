@@ -5,6 +5,8 @@ import com.tuum.core.banking.entity.Transaction;
 import com.tuum.core.banking.service.AccountService;
 import com.tuum.core.banking.service.TransactionService;
 import com.tuum.core.banking.serviceparam.ApiResponse;
+import com.tuum.core.banking.serviceparam.CreateTransactionInput;
+import com.tuum.core.banking.serviceparam.CreateTransactionOutput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,16 +49,16 @@ public class TransactionController {
     }
 
     @PostMapping("/transaction")
-    public ResponseEntity<ApiResponse> createTransaction(@RequestBody Transaction transaction){
+    public ResponseEntity<ApiResponse> createTransaction(@RequestBody CreateTransactionInput payload){
        try {
 
-           List<String> violations = transactionService.validateTransaction(transaction);
+           List<String> violations = transactionService.validateTransaction(payload.getTransaction());
            if(!violations.isEmpty()){
                return new ResponseEntity<>(new ApiResponse(null,violations), HttpStatus.BAD_REQUEST);
            }
 
-           transactionService.createTransactionMessage(transaction);
-           return new ResponseEntity<>(new ApiResponse(transaction,null), HttpStatus.OK);
+           CreateTransactionOutput message = transactionService.createTransactionMessage(payload);
+           return new ResponseEntity<>(new ApiResponse(message,null), HttpStatus.OK);
        }
        catch(Exception e){
            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);

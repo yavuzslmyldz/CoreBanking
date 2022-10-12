@@ -1,16 +1,17 @@
 package com.tuum.core.banking.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.tuum.core.banking.constants.TransactionStatus;
-
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
-import java.util.List;
+
 
 import static com.tuum.core.banking.constants.Messages.*;
 
 @Entity
 @Table(name = "transaction")
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class Transaction extends CoreBankingBaseEntity {
 
     @Id
@@ -53,9 +54,6 @@ public class Transaction extends CoreBankingBaseEntity {
     @Enumerated(EnumType.STRING)
     private TransactionStatus status;
 
-    @Column(name="process_note")
-    @ElementCollection
-    private List<String> processNote;
 
 
 
@@ -94,15 +92,17 @@ public class Transaction extends CoreBankingBaseEntity {
         return description;
     }
 
-    public List<String> getProcessNote() {
-        return processNote;
-    }
+
     public String getCurrency() {
         return currency;
     }
 
     public TransactionStatus getStatus() {
         return status;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public void setDirection(String direction) {
@@ -129,9 +129,6 @@ public class Transaction extends CoreBankingBaseEntity {
         this.status = status;
     }
 
-    public void setProcessNote(List<String> processNote) {
-        this.processNote = processNote;
-    }
 
     public void setDescription(String description) {
         this.description = description;

@@ -1,0 +1,55 @@
+version: '3'
+
+services:
+  tuum_core_banking_app:
+    build:
+      context: .
+    container_name: tuum_core_banking_app
+    depends_on:
+      - db
+      - rabbitmq
+    ports:
+      - 8080:8080
+    environment:
+      - spring.jpa.hibernate.ddl-auto=create
+      - spring.datasource.url=jdbc:postgresql://db:5432/CoreBanking
+      - spring.datasource.username=postgres
+      - spring.datasource.password=postgres
+      - spring.rabbitmq.host=rabbitmq_container
+      - spring.rabbitmq.port=5672
+      - spring.rabbitmq.username=guest
+      - spring.rabbitmq.password=guest
+      - core.banking.rabbitmq.exchange= core_banking_exchange
+      - core.banking.rabbitmq.account.queue= account_queue
+      - core.banking.rabbitmq.account.routing.key= account_routing
+      - core.banking.rabbitmq.transaction.queue= transaction_queue
+      - core.banking.rabbitmq.transaction.routing.key= transaction_routing
+    networks:
+      - core_banking_network
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  db:
+    image: 'postgres:13.1-alpine'
+    container_name: db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=CoreBanking
+    networks:
+      - core_banking_network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq_container
+    ports:
+      - 5673:5673
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - core_banking_network
+
+networks:
+  core_banking_network:
+    external:
+      name: core_banking_network

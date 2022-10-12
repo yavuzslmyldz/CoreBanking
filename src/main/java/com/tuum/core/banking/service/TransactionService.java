@@ -7,6 +7,8 @@ import com.tuum.core.banking.entity.Account;
 import com.tuum.core.banking.entity.Balance;
 import com.tuum.core.banking.entity.Transaction;
 import com.tuum.core.banking.repository.TransactionRepository;
+import com.tuum.core.banking.serviceparam.CreateTransactionInput;
+import com.tuum.core.banking.serviceparam.CreateTransactionOutput;
 import com.tuum.core.banking.utils.EnumUtils;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -106,15 +108,24 @@ public class TransactionService {
         return transactionRepository.findByAccountId(accountId);
     }
 
-    public void createTransactionMessage(Transaction transaction){
-        mqTemplate.convertAndSend(exchange, transactionRoutingKey, transaction);
+    public CreateTransactionOutput createTransactionMessage(CreateTransactionInput payload){
+
+        CreateTransactionOutput message = new CreateTransactionOutput();
+        message.setTransaction(payload.getTransaction());
+
+        mqTemplate.convertAndSend(exchange, transactionRoutingKey, message);
+
+        // getting next id for service output
+        message.getTransaction().setId(transactionRepository.getNextTransactionId());
+
+        return message;
     }
 
     @Transactional
     @RabbitListener(queues = {"${core.banking.rabbitmq.transaction.queue}"})
-    public void transactionConsumer(Transaction transaction){
-        //LOGGER.info(String.format("Received message -> %s", message));
+    public void transactionConsumer(CreateTransactionOutput unAcked){
 
+            Transaction transaction = unAcked.getTransaction();
             transaction.setStatus(TransactionStatus.WAITING);
             transactionRepository.save(transaction);
 

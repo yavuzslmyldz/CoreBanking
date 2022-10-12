@@ -18,6 +18,7 @@ public class Account extends CoreBankingBaseEntity {
             sequenceName = "account_seq", allocationSize=1, initialValue=100000)
     private long id;
 
+
     @Column(name="customer_id")
     @NotNull
     private int customerId;
@@ -45,6 +46,18 @@ public class Account extends CoreBankingBaseEntity {
 
     public String getCountry() {
         return country;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setCustomerId(int customerId) {
+        this.customerId = customerId;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
 
 

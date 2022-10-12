@@ -20,18 +20,18 @@ public class BalanceService {
         balanceRepository = _balanceRepository;
     }
 
-    public Balance createBalance(Balance balance){
-        return balanceRepository.save(balance);
+    public void saveBalances(List<Balance> balances){
+        balanceRepository.saveAllAndFlush(balances);
     }
 
     public void save(Balance balance){
          balanceRepository.save(balance);
     }
 
-    public void createBalancesViaAccount(Account account, List<String> currencies){
+    public List<Balance> createBalancesViaAccount(Account account, List<String> currencies){
 
         if(currencies.isEmpty())
-            return;
+            return null;
 
         List<Balance> registeredBalances = new ArrayList<Balance>(currencies.size());
         int size = currencies.size();
@@ -46,7 +46,7 @@ public class BalanceService {
             registeredBalances.add(balance);
         }
 
-        balanceRepository.saveAll(registeredBalances);
+        return registeredBalances;
     }
 
     public List<Balance> getBalances(long accountId){

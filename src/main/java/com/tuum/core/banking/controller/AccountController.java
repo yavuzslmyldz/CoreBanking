@@ -6,6 +6,8 @@ import com.tuum.core.banking.service.AccountService;
 import com.tuum.core.banking.service.BalanceService;
 import com.tuum.core.banking.serviceparam.ApiResponse;
 import com.tuum.core.banking.serviceparam.CreateAccountInput;
+import com.tuum.core.banking.serviceparam.CreateAccountOutput;
+import com.tuum.core.banking.serviceparam.GetAccountOutput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
@@ -43,9 +45,9 @@ public class AccountController {
             }
 
             // account creating message for mq
-             accountService.createAccountMessage(payload);
+             CreateAccountOutput message = accountService.createAccountMessage(payload);
 
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(new ApiResponse(message,null),HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -63,10 +65,13 @@ public class AccountController {
                         HttpStatus.NO_CONTENT);
             }
 
-            // getting balances for given account
-            List<Balance> balances = balanceService.getBalances(accountId);
+            GetAccountOutput output = new GetAccountOutput();
+            output.setAccount(account.get());
 
-            return new ResponseEntity<>(new ApiResponse<>(Pair.of(account,balances),null) , HttpStatus.OK);
+            // getting balances for given account
+            output.setBalances(balanceService.getBalances(accountId));
+
+            return new ResponseEntity<>(new ApiResponse<>(output,null) , HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }

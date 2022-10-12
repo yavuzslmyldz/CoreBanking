@@ -1,5 +1,7 @@
 package com.tuum.core.banking.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sun.istack.NotNull;
 
 import javax.persistence.*;
@@ -8,6 +10,7 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "balance")
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class Balance extends CoreBankingBaseEntity {
 
     @Id
@@ -47,6 +50,10 @@ public class Balance extends CoreBankingBaseEntity {
 
     public long getId() {
         return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
     public int getCustomerId() {
         return customerId;
