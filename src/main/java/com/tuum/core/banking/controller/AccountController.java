@@ -34,7 +34,7 @@ public class AccountController {
         balanceService = _balanceService;
     }
 
-    @Transactional
+
     @PostMapping("/account")
     public ResponseEntity<ApiResponse> createAccount(@RequestBody CreateAccountInput payload) {
         try {
