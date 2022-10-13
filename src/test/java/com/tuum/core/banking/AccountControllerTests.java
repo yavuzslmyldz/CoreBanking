@@ -61,14 +61,14 @@ public class AccountControllerTests {
 		payload.setAccount(new Account(100000, "Turkey"));
 		payload.setCurrencies(Arrays.asList("USD","EUR"));
 
-	/*	mvc.perform(post("/api/v1/account")
+		mvc.perform(post("/api/v1/account")
 						.content(objectMapper.writeValueAsString(payload))
 						.contentType(MediaType.APPLICATION_JSON))
-						.andExpect(status().isOk()); */
+						.andExpect(status().isOk());
 	}
 
-	/*@Test
-	public void should_retrieve_account_message_when_valid() throws Exception {
+	@Test
+	public void should_retrieve_account_message_when_valid() {
 
 		CreateAccountInput payload = new CreateAccountInput();
 		payload.setAccount(new Account(100000, "Turkey"));
@@ -83,5 +83,5 @@ public class AccountControllerTests {
 		accountService.accountConsumer(unAcked);
 
 	}
-*/
+
 }
