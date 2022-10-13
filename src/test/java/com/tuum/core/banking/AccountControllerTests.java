@@ -31,7 +31,7 @@ public class AccountControllerTests {
 	@Autowired
 	private ObjectMapper objectMapper;
 
-	@Test
+/*	@Test
 	public void should_return_not_found_when_invalid_accountId() throws Exception {
 		mvc.perform(get("/api/v1/account").queryParam("accountId", "0")
 						.contentType(MediaType.APPLICATION_JSON))
@@ -83,5 +83,5 @@ public class AccountControllerTests {
 		accountService.accountConsumer(unAcked);
 
 	}
-
+*/
 }
